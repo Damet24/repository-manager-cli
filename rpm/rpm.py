@@ -2,8 +2,9 @@
 # rpm/rpm.py
 
 from pathlib import Path
-from typing import Any, Dict, NamedTuple
+from typing import Any, Dict, List, NamedTuple, Optional
 
+from rpm import DB_READ_ERROR
 from rpm.database import DatabeseHandler
 
 class CurrentRepo(NamedTuple):
@@ -13,3 +14,17 @@ class CurrentRepo(NamedTuple):
 class Repoer:
     def __init__(self, db_path: Path) -> None:
         self._db_handler = DatabeseHandler(db_path)
+
+    def add(self, name: List[str], url: str, password: Optional[str]):
+        """Add a new rpm the database."""
+        repo = {
+            "Name": name,
+            "Url": url,
+            "Password": password
+        }
+        read = self._db_handler.read_repos()
+        if read.error == DB_READ_ERROR:
+            return  CurrentRepo(repo, read.error)
+        read.repo_list.append(repo)
+        write = self._db_handler.write_repos(read.repo_list)
+        return CurrentRepo(repo, write.error)

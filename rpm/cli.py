@@ -2,11 +2,18 @@
 # rpm/cli.py
 
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import typer
 
-from rpm import ERRORS, __app_name__, __version__, config, database
+from rpm import (
+    ERRORS, 
+    __app_name__, 
+    __version__, 
+    config, 
+    database,
+    rpm
+)
 
 app = typer.Typer()
 
@@ -27,6 +34,26 @@ def init(db_path: str = typer.Option(
         raise typer.Exit(1)
     else:
         typer.secho(f"The repo database is {db_path}", fg=typer.colors.GREEN)
+
+
+def get_repoer() -> rpm.Repoer:
+    if config.CONFIG_FILE_PATH.exists():
+        db_path = database.get_database_path(config.CONFIG_FILE_PATH)
+    else:
+        typer.secho(
+            'Config file not found. Please, run "rpm init"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
+
+    if db_path.exists():
+        return rpm.Repoer(db_path)
+    else:
+        typer.secho(
+            'Database not found. Please, run "rptodo init"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
 
 
 def _version_callback(value: bool) -> None:

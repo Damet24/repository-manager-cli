@@ -33,10 +33,11 @@ def mock_json_file(tmp_path):
 test_data1 = {
     "name": "dotfiles",
     "url": "https://github.com/damet24/dotfiles",
+    "password": "",
     "repo" : {
-        "name": "dotfiles",
-        "url": "https://github.com/damet24/dotfiles",
-        "password" : ""
+        "Name": "dotfiles",
+        "Url": "https://github.com/damet24/dotfiles",
+        "Password" : ""
     }
 }
 
@@ -45,29 +46,31 @@ test_data2 = {
     "url": "https://azure.coltek.com/ticket/ticket.git",
     "password": "hute8S_hu83pth-tehuc,h.9ru.h91",
     "repo" : {
-        "name": "test",
-        "url": "https://azure.coltek.com/ticket/ticket.git",
-        "password": "hute8S_hu83pth-tehuc,h.9ru.h91",
+        "Name": "test",
+        "Url": "https://azure.coltek.com/ticket/ticket.git",
+        "Password": "hute8S_hu83pth-tehuc,h.9ru.h91",
     }
 }
 
 @pytest.mark.parametrize(
-    "name, url, expected",
+    "name, url, password, expected",
     [
         pytest.param(
             test_data1["name"],
             test_data1["url"],
+            test_data1["password"],
             (test_data1["repo"], SUCCESS),
         ),
         pytest.param(
             test_data2["name"],
             test_data2["url"],
+            test_data2["password"],
             (test_data2["repo"], SUCCESS),
         ),
     ]
 )
-def test_add(mock_json_file, name, url, expected):
+def test_add(mock_json_file, name, url, password, expected):
     repoer = rpm.Repoer(mock_json_file)
-    assert repoer.add(name, url) == expected
+    assert repoer.add(name, url, password) == expected
     read = repoer._db_handler.read_repos()
     assert len(read.repo_list) == 2
