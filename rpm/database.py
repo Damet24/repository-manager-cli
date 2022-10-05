@@ -9,7 +9,7 @@ from typing import Any, Dict, List, NamedTuple
 from rpm import DB_WRITE_ERROR, DB_READ_ERROR, JSON_ERROR, SUCCESS
 
 DEFAULT_DB_FILE_PATH = Path.home().joinpath(
-    "." + Path.home().stem + "_rpm.json"
+    "." + Path.home().stem + "_repo.json"
 )
 
 def get_database_path(config_file: Path) -> Path:

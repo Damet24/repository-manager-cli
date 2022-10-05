@@ -33,7 +33,7 @@ def mock_json_file(tmp_path):
 test_data1 = {
     "name": "dotfiles",
     "url": "https://github.com/damet24/dotfiles",
-    "password": "",
+    "password": [""],
     "repo" : {
         "Name": "dotfiles",
         "Url": "https://github.com/damet24/dotfiles",
@@ -44,11 +44,22 @@ test_data1 = {
 test_data2 = {
     "name": "test",
     "url": "https://azure.coltek.com/ticket/ticket.git",
-    "password": "hute8S_hu83pth-tehuc,h.9ru.h91",
+    "password": ["hute8S_hu83pth-tehuc,h.9ru.h91"],
     "repo" : {
         "Name": "test",
         "Url": "https://azure.coltek.com/ticket/ticket.git",
         "Password": "hute8S_hu83pth-tehuc,h.9ru.h91",
+    }
+}
+
+test_data3 = {
+    "name": "test",
+    "url": "https://azure.coltek.com/ticket/ticket.git",
+    "password": ["hola", "como", "estas?"],
+    "repo" : {
+        "Name": "test",
+        "Url": "https://azure.coltek.com/ticket/ticket.git",
+        "Password": "hola como estas?",
     }
 }
 
@@ -66,6 +77,12 @@ test_data2 = {
             test_data2["url"],
             test_data2["password"],
             (test_data2["repo"], SUCCESS),
+        ),
+        pytest.param(
+            test_data3["name"],
+            test_data3["url"],
+            test_data3["password"],
+            (test_data3["repo"], SUCCESS),
         ),
     ]
 )

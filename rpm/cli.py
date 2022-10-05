@@ -35,11 +35,11 @@ def init(db_path: str = typer.Option(
     else:
         typer.secho(f"The repo database is {db_path}", fg=typer.colors.GREEN)
 
-
 def get_repoer() -> rpm.Repoer:
     if config.CONFIG_FILE_PATH.exists():
         db_path = database.get_database_path(config.CONFIG_FILE_PATH)
     else:
+        db_path = database.get_database_path(config.CONFIG_FILE_PATH)
         typer.secho(
             'Config file not found. Please, run "rpm init"',
             fg=typer.colors.RED,
@@ -50,10 +50,34 @@ def get_repoer() -> rpm.Repoer:
         return rpm.Repoer(db_path)
     else:
         typer.secho(
-            'Database not found. Please, run "rptodo init"',
+            'Database not found. Please, run "rpm init"',
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
+
+@app.command()
+def add(
+        name: str = typer.Argument(...),
+        url: str = typer.Argument(...),
+        password: List[str] = typer.Option("", "--password", "-p")
+    ) -> None:
+    """Add a new repo."""
+    repoer = get_repoer()
+    repo, error = repoer.add(name, url, password)
+    typer.secho(
+        f'{repo["Name"]} {error}'
+    )
+    if error:
+        typer.secho(
+            f'Adding rpm failed with "{ERRORS[error]}"', fg=typer.colors.RED
+        )
+        raise typer.Exit(1)
+    else:
+        typer.secho(
+            f"""repo: "{repo['Name']}" was added """,
+            # f"""with priority: {}""",
+            fg=typer.colors.GREEN,
+        )
 
 
 def _version_callback(value: bool) -> None:

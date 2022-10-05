@@ -15,12 +15,18 @@ class Repoer:
     def __init__(self, db_path: Path) -> None:
         self._db_handler = DatabeseHandler(db_path)
 
-    def add(self, name: List[str], url: str, password: Optional[str]):
+    def add(self, name: str, url: str, password: Optional[List[str]]):
         """Add a new rpm the database."""
+
+        if password != None:
+            password_text = " ".join(password)
+        else:
+            password_text = ""
+
         repo = {
             "Name": name,
             "Url": url,
-            "Password": password
+            "Password": password_text
         }
         read = self._db_handler.read_repos()
         if read.error == DB_READ_ERROR:
