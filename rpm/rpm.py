@@ -34,3 +34,8 @@ class Repoer:
         read.repo_list.append(repo)
         write = self._db_handler.write_repos(read.repo_list)
         return CurrentRepo(repo, write.error)
+
+    def get_repo_list(self) -> List[Dict[str, Any]]:
+        """Return the current repo list"""
+        read = self._db_handler.read_repos()
+        return read.repo_list

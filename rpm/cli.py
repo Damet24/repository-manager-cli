@@ -79,6 +79,29 @@ def add(
             fg=typer.colors.GREEN,
         )
 
+@app.command(name="list")
+def list_all() -> None:
+    """List all repos."""
+    repoer = get_repoer()
+    repo_list = repoer.get_repo_list()
+    if len(repo_list) == 0:
+        typer.secho(
+            "There are no tasks in the repoo list yet", fg=typer.colors.RED
+        )
+        raise typer.Exit()
+    typer.secho("\nrepo list:\n", fg=typer.colors.BLUE, bold=True)
+
+    typer.secho("-" * 70, fg=typer.colors.BLUE)
+    for id, repo in enumerate(repo_list, 1):
+        name, url, password = repo.values()
+        typer.secho(
+            f"Id: \t{id}\n"
+            f"Name: \t{name}\n"
+            f"Url: \t{url}\n"
+            f"Password: \t{password}\n",
+            fg=typer.colors.BLUE,
+        )
+    typer.secho("-" * 70, fg=typer.colors.BLUE)
 
 def _version_callback(value: bool) -> None:
     if value:
@@ -95,5 +118,5 @@ def main(
         callback=_version_callback,
         is_eager=True,
     )
-) -> None:
+    ) -> None:
     return
