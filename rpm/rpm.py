@@ -4,7 +4,7 @@
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple, Optional
 
-from rpm import DB_READ_ERROR
+from rpm import DB_READ_ERROR, ID_ERROR
 from rpm.database import DatabeseHandler
 
 class CurrentRepo(NamedTuple):
@@ -39,3 +39,17 @@ class Repoer:
         """Return the current repo list"""
         read = self._db_handler.read_repos()
         return read.repo_list
+
+    def remove(self, repo_id: int) -> CurrentRepo:
+        """Remove a repo from the database using its id or index."""
+        read = self._db_handler.read_repos()
+        if read.error:
+            return CurrentRepo({}, read.error)
+
+        try:
+            repo = read.repo_list.pop(repo_id - 1)
+        except IndexError:
+            return CurrentRepo({}, ID_ERROR)
+
+        write = self._db_handler.write_repos(read.repo_list)
+        return CurrentRepo(repo, write.error)

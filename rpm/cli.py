@@ -103,6 +103,43 @@ def list_all() -> None:
         )
     typer.secho("-" * 70, fg=typer.colors.BLUE)
 
+@app.command()
+def remove(repo_id: int = typer.Argument(...), farce: bool = typer.Option(False, "--force", "-f", help="Force deletion without confirmation.") ) -> None:
+    """Remove a repo using its REPO_ID."""
+    repoer = get_repoer()
+
+    def _remove():
+        repo, error = repoer.remove(repo_id)
+
+        if error:
+            typer.secho(
+                f'Removing to-do # {repo_id} failed with "{ERRORS[error]}"',
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(1)
+        else:
+            typer.secho(
+                f"""repo # {repo_id}: '{repo["Name"]}' was removed""",
+                fg=typer.colors.GREEN,
+            )
+
+    if farce:
+        _remove()
+    else:
+        repo_list = repoer.get_repo_list()
+        try:
+            repo = repo_list[repo_id - 1]
+        except IndexError:
+            typer.secho("Invalid REPO_ID", fg=typer.colors.RED)
+            raise typer.Exit(1)
+        delete = typer.confirm(
+            f"Delete repo # {repo_id}: {repo['Name']}?"
+        )
+        if delete:
+            _remove()
+        else:
+            typer.echo("Operation canceled")
+
 def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"{__app_name__} v{__version__}")
