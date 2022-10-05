@@ -53,3 +53,9 @@ class Repoer:
 
         write = self._db_handler.write_repos(read.repo_list)
         return CurrentRepo(repo, write.error)
+
+    def remove_all(self):
+        """Remove all reos from the database."""
+        write = self._db_handler.write_repos([])
+        return CurrentRepo({}, write.error)
+

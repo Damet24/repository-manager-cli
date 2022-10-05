@@ -74,8 +74,8 @@ def add(
         raise typer.Exit(1)
     else:
         typer.secho(
-            f"""repo: "{repo['Name']}" was added """,
-            # f"""with priority: {}""",
+            f"""repo: "{repo['Name']}" was added """
+            f"""with url: {repo['Url']}""",
             fg=typer.colors.GREEN,
         )
 
@@ -99,7 +99,7 @@ def list_all() -> None:
             f"Name: \t{name}\n"
             f"Url: \t{url}\n"
             f"Password: \t{password}\n",
-            fg=typer.colors.BLUE,
+            fg=typer.colors.CYAN,
         )
     typer.secho("-" * 70, fg=typer.colors.BLUE)
 
@@ -139,6 +139,23 @@ def remove(repo_id: int = typer.Argument(...), farce: bool = typer.Option(False,
             _remove()
         else:
             typer.echo("Operation canceled")
+
+@app.command(name="clear")
+def remove_all(force: bool = typer.Option(..., prompt="Delete all repos?", help="Force deletion without confirmation.")) -> None:
+    """Remove all repos"""
+    repoer = get_repoer()
+    if force:
+        error = repoer.remove_all().error
+        if error:
+            typer.secho(
+                f'Removing to-dos failed with "{ERRORS[error]}"',
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(1)
+        else:
+            typer.secho("All to-dos were removed", fg=typer.colors.GREEN)
+    else:
+        typer.echo("Operation canceled")
 
 def _version_callback(value: bool) -> None:
     if value:
